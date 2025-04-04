@@ -1,0 +1,1 @@
+E:\GithubProyects\TechTest\TechTest\Library\PramData\AndroidApplicationController\Cache\com.UnityTechnologies.com.unity.template.urpblank\gradle-project\unityLibrary\build\intermediates\cxx\Debug\2j56m2k2\obj\arm64-v8a
