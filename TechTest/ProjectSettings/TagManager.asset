@@ -8,16 +8,16 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - UI Overlay
   - Water
   - UI
-  - Left Hand Physics
-  - Right Hand Physics
-  - 
-  - 
-  - 
-  - 
-  - 
+  - VR/Left Hand Physics
+  - VR/Right Hand Physics
+  - VR/Non Networked Body
+  - VR/Networked Body
+  - VR/Non Physical Hands
+  - Platform
+  - Puck-Ball
   - 
   - 
   - 

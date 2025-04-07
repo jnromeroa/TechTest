@@ -6,60 +6,62 @@ using System.Collections;
 
 public class MyNetworkManager : NetworkManager
 {
-    [SerializeField] int serverDiscoveryWaitTime = 5;
-    [SerializeField] bool useRandomSeconds;
-    NetworkDiscovery networkDiscovery;
-    ServerResponse? response = null;
+    [SerializeField] private int _serverDiscoveryWaitTime = 5;
+    [SerializeField] private bool _useRandomSeconds;
+    [SerializeField] private bool _autoStart = true;
+    NetworkDiscovery _networkDiscovery;
+    ServerResponse? _response = null;
     public override void Awake()
     {
         base.Awake();
-        networkDiscovery = GetComponent<NetworkDiscovery>();
+        _networkDiscovery = GetComponent<NetworkDiscovery>();
     }
     private void OnEnable()
     {
-        if (networkDiscovery == null) return;
-        networkDiscovery.OnServerFound.AddListener(ServerFound);
+        if (_networkDiscovery == null) return;
+        _networkDiscovery.OnServerFound.AddListener(ServerFound);
     }
     private void OnDisable()
     {
-        if (networkDiscovery == null) return;
-        networkDiscovery.OnServerFound.RemoveListener(ServerFound);
+        if (_networkDiscovery == null) return;
+        _networkDiscovery.OnServerFound.RemoveListener(ServerFound);
     }
 
     public override void Start()
     {
+        if (!_autoStart) return;
         StartCoroutine(ActiveClient());
     }
     public void ActiveHost()
     {
         StartHost();
-        networkDiscovery.AdvertiseServer();
+        _networkDiscovery.AdvertiseServer();
 
     }
     public IEnumerator ActiveClient()
     {
-        int randomSeconds = Random.Range(0, serverDiscoveryWaitTime);
+        int randomSeconds = Random.Range(0, _serverDiscoveryWaitTime);
         WaitForSeconds wfs = new WaitForSeconds(1f);
-        networkDiscovery.StartDiscovery();
+        _networkDiscovery.StartDiscovery();
         for (int i = 0; 
-            i < (useRandomSeconds ? randomSeconds : serverDiscoveryWaitTime); 
+            i < (_useRandomSeconds ? randomSeconds : _serverDiscoveryWaitTime); 
             i++)
         {
-            if (response != null)
+            if (_response != null)
             {
-                networkDiscovery.StopDiscovery();
-                StartClient(response.Value.uri);
+                _networkDiscovery.StopDiscovery();
+                StartClient(_response.Value.uri);
                 yield break;
             }
             yield return wfs;
         }
-        networkDiscovery.StopDiscovery();
+        _networkDiscovery.StopDiscovery();
         ActiveHost();
     }
 
     void ServerFound(ServerResponse serverResponse)
     {
-        response = serverResponse;
+        _response = serverResponse;
         Debug.Log($"Server Found at {serverResponse.uri}");
     }
 
