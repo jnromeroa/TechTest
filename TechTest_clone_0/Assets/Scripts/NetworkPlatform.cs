@@ -11,7 +11,7 @@ public class NetworkPlatform : NetworkBehaviour
     [SyncVar(hook = nameof(OnZPosChanged))]
     private float _zPosition;
     [SyncVar]
-    private bool isMoving;
+    private bool _isMoving;
     private float _originalZPosition;
     private Transform _t;
 
@@ -20,47 +20,55 @@ public class NetworkPlatform : NetworkBehaviour
         _t = transform;
         _originalZPosition = _t.position.z;
     }
+
+    #region Server
     public override void OnStartServer()
     {
         base.OnStartServer();
         _zPosition = _t.position.z;
 
     }
+    [Command(requiresAuthority = false)]
+    public void ActivateCmd()
+    {
+        if (_isMoving) return;
+        _isMoving = true;
+        _t.DOMoveZ(_targetZPosition, _moveDurationSeconds).SetEase(Ease.InOutCubic).OnComplete(() =>
+        {
+            _isMoving = false;
+            Invoke(nameof(Deactivate), _waitDurationSeconds);
+        }
+        );
+    }
 
+    [ServerCallback]
+    private void Update()
+    {
+        if (!_isMoving) return;
+        _zPosition = _t.position.z;
+    } 
+    #endregion
+
+    #region Client
     [ContextMenu("Activate")]
     public void Activate()
     {
         ActivateCmd();
     }
-    [Command(requiresAuthority = false)]
-    public void ActivateCmd()
-    {
-        if (isMoving) return;
-        isMoving = true;
-        _t.DOMoveZ(_targetZPosition, _moveDurationSeconds).SetEase(Ease.InOutCubic).OnComplete(() =>
-        {
-            isMoving = false;
-            Invoke(nameof(Deactivate), _waitDurationSeconds);
-            }
-        );
-    }
-
     public void Deactivate()
     {
-        isMoving = true;
-        _t.DOMoveZ(_originalZPosition, _moveDurationSeconds).SetEase(Ease.InOutCubic).OnComplete(()=>isMoving = false);
-    }
-    private void Update()
-    {
-        if (!isMoving) return;
-        _zPosition = _t.position.z;
-    }
+        _isMoving = true;
+        _t.DOMoveZ(_originalZPosition, _moveDurationSeconds).SetEase(Ease.InOutCubic).OnComplete(() => _isMoving = false);
+    } 
+    #endregion
 
 
+    #region SyncVar Callbacks
     private void OnZPosChanged(float oldValue, float newValue)
     {
         _t.position = new Vector3(_t.position.x, _t.position.y, newValue);
-    }
+    } 
+    #endregion
 
-    
+
 }

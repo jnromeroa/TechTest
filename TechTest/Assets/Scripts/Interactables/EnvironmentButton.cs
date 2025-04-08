@@ -2,14 +2,14 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
 
-public class EnvironmentButton : MonoBehaviour, IInteractable
+public class EnvironmentButton : MonoBehaviour
 {
     public UnityEvent OnInteract;
     public UnityEvent OnRelease;
     [SerializeField] private Transform _buttonPresserTransform;
     [SerializeField] private float _buttonPressedLocalYPosition;
-    [SerializeField] private bool autorelease = true;
-    [SerializeField] private float autoreleaseTimeSeconds = 10f;
+    [SerializeField] private bool _autorelease = true;
+    [SerializeField] private float _autoreleaseTimeSeconds = 10f;
     private float _originalLocalYPosition;
     private bool _isInteractable = true;
 
@@ -22,16 +22,16 @@ public class EnvironmentButton : MonoBehaviour, IInteractable
     {
         if (!_isInteractable) return;
         Press();
-        if (!autorelease) return;
-        Invoke(nameof(Release), autoreleaseTimeSeconds);
+        if (!_autorelease) return;
+        Invoke(nameof(Release), _autoreleaseTimeSeconds);
     }
-    void Press()
+    private void Press()
     {
         OnInteract?.Invoke();
         _isInteractable = false;
         AnimatePress();
     }
-    void Release()
+    private void Release()
     {
         OnRelease?.Invoke();
         _isInteractable = true;

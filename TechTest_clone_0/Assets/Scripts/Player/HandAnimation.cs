@@ -13,6 +13,17 @@ public class HandAnimation : MonoBehaviour
     {
         TryInitialize();
     }
+    void Update()
+    {
+        if(!targetDevice.isValid)
+        {
+            TryInitialize();
+        }
+        else
+        {
+            UpdateHandAnimation();
+        }
+    }
 
     void TryInitialize()
     {
@@ -46,15 +57,4 @@ public class HandAnimation : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if(!targetDevice.isValid)
-        {
-            TryInitialize();
-        }
-        else
-        {
-            UpdateHandAnimation();
-        }
-    }
 }

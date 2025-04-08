@@ -3,34 +3,49 @@ using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-public class ObjectColliderDisabler : NetworkBehaviour
+public class InteractableColliderDisabler : NetworkBehaviour
 {
-    [SerializeField] bool includeServer = false;
-    private XRGrabInteractable interactable;
-    private Collider[] colliders;
-    
-
+    [SerializeField] bool _includeServer = false;
+    private XRGrabInteractable _interactable;
+    private Collider[] _colliders;
     private void Awake()
     {
-        colliders = GetComponentsInChildren<Collider>();
+        _colliders = GetComponentsInChildren<Collider>();
         if (isServer) return;
-        interactable = GetComponent<XRGrabInteractable>();
-        interactable.selectEntered.AddListener((args) =>
+        _interactable = GetComponent<XRGrabInteractable>();
+        _interactable.selectEntered.AddListener((args) =>
         {
             AssignOwnershipCmd(NetworkedPlayer.Local.connectionToClient);
         });
-        interactable.selectExited.AddListener((args) =>
+        _interactable.selectExited.AddListener((args) =>
         {
             RemoveOwnershipCmd();
         });
-        
+
     }
+
+    private void EnableColliders()
+    {
+        foreach (var collider in _colliders)
+        {
+            collider.enabled = true;
+        }
+    }
+    private void DisableColliders()
+    {
+        foreach (var collider in _colliders)
+        {
+            collider.enabled = false;
+        }
+    }
+
+    #region Server
     [Command(requiresAuthority = false)]
     private void RemoveOwnershipCmd()
     {
         netIdentity.RemoveClientAuthority();
         EnableCollidersRpc();
-        if (!includeServer) return;
+        if (!_includeServer) return;
         EnableColliders();
 
     }
@@ -40,31 +55,21 @@ public class ObjectColliderDisabler : NetworkBehaviour
     {
         netIdentity.AssignClientAuthority(conn);
         DisableCollidersRpc();
-        if (!includeServer) return;
+        if (!_includeServer) return;
         DisableColliders();
     }
+    #endregion
+
+    #region Client
     [ClientRpc(includeOwner = false)]
     void EnableCollidersRpc()
     {
         EnableColliders();
-    }
-    void EnableColliders()
-    {
-        foreach (var collider in colliders)
-        {
-            collider.enabled = true;
-        }
     }
     [ClientRpc(includeOwner = false)]
     void DisableCollidersRpc()
     {
         DisableColliders();
     }
-    void DisableColliders()
-    {
-        foreach (var collider in colliders)
-        {
-            collider.enabled = false;
-        }
-    }
+    #endregion
 }

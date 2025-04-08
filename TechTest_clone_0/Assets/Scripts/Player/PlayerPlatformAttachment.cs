@@ -13,7 +13,7 @@ public class PlayerPlatformAttachment : MonoBehaviour
     {
         _t = transform;
     }
-    void Update()
+    private void Update()
     {
         CheckForPlatformBelow();
     }
@@ -55,13 +55,11 @@ public class PlayerPlatformAttachment : MonoBehaviour
     {
         currentPlatform = platform;
         transform.SetParent(currentPlatform);
-        Debug.Log($"Attached to platform: {currentPlatform.name}");
     }
 
     private void DetachFromPlatform()
     {
         transform.SetParent(null);
-        Debug.Log($"Detached from platform: {currentPlatform.name}");
         currentPlatform = null;
     }
 }

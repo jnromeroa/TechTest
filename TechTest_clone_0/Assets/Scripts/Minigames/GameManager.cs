@@ -61,6 +61,8 @@ public class GameManager : NetworkBehaviour
         _ball.position = position;
         SetBallActive(true);
     }
+
+    #region SyncVarCallbacks
     private void OnPlayer1ScoreChanged(int oldValue, int newValue)
     {
         OnPlayer1ScoreChangedCallback?.Invoke(newValue);
@@ -73,6 +75,7 @@ public class GameManager : NetworkBehaviour
     private void OnActiveBallChanged(bool oldValue, bool newValue)
     {
         _ball.gameObject.SetActive(newValue);
-    }
+    } 
+    #endregion
 
 }

@@ -52,6 +52,11 @@ public class PhysicallyVRFollower : NetworkBehaviour
     {
         if (!isOwned) return;
         if (_bodyPart == VRBodyPart.NONE || _bodyPart == VRBodyPart.HEAD) return;
+        CheckNonPhysicalHandDistance();
+    }
+
+    private void CheckNonPhysicalHandDistance()
+    {
         float distanceBetweenHands = Vector3.Distance(_t.position, _target.position);
         if (distanceBetweenHands >= _distanceToShowNonPhysicalHand && !_showingNonPhysicalHand)
         {
@@ -65,6 +70,7 @@ public class PhysicallyVRFollower : NetworkBehaviour
             _nonPhysicalHand.enabled = false;
         }
     }
+
     private void LateUpdate()
     {
         if (!isOwned) return;

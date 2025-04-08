@@ -11,7 +11,6 @@ public class PhysicsTrigger : MonoBehaviour
     {
         if (_useOnCollition) return;
         if (((1 << other.gameObject.layer) & _layerToDetect) == 0) return;
-        Debug.Log("Button Triggered");
         OnTrigger?.Invoke();
 
     }
@@ -20,7 +19,6 @@ public class PhysicsTrigger : MonoBehaviour
     {
         if (!_useOnCollition) return;
         if (((1 << other.gameObject.layer) & _layerToDetect) == 0) return;
-        Debug.Log("Button Touched");
         OnTrigger?.Invoke();
     }
 }

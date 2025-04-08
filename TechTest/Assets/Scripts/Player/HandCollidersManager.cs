@@ -15,9 +15,25 @@ public class HandCollidersManager : NetworkBehaviour
     {
         handColliders = GetComponentsInChildren<Collider>();
     }
+    private void EnableColliders()
+    {
+        foreach (Collider collider in handColliders)
+        {
+            collider.enabled = true;
+        }
+    }
+    private void DisableColliders()
+    {
+        foreach (Collider collider in handColliders)
+        {
+            collider.enabled = false;
+        }
+    }
+
+    #region Client
     public override void OnStartAuthority()
     {
-        base.OnStartServer();
+        base.OnStartAuthority();
         switch (_bodyPart)
         {
             case VRBodyPart.RIGHT:
@@ -34,7 +50,38 @@ public class HandCollidersManager : NetworkBehaviour
                 break;
         }
     }
+    public void Enable()
+    {
+        EnableCmd();
+        EnableColliders();
+    }
+    public void EnableDelay(float time)
+    {
+        Invoke(nameof(Enable), time);
+    }
+    public void Disable()
+    {
+        DisableCmd();
+        DisableColliders();
+    } 
+    #endregion
 
+    #region Server
+    [Command]
+    private void EnableCmd()
+    {
+        areCollidersEnabled = true;
+        EnableColliders();
+    }
+    [Command]
+    private void DisableCmd()
+    {
+        areCollidersEnabled = false;
+        DisableColliders();
+    } 
+    #endregion
+
+    #region SyncVar Callbacks
     private void OnEnableCollidersChanged(bool oldValue, bool newValue)
     {
         if (newValue)
@@ -43,50 +90,8 @@ public class HandCollidersManager : NetworkBehaviour
             return;
         }
         DisableColliders();
-    }
+    } 
+    #endregion
 
-    public void Enable()
-    {
-        EnableCmd();
-        EnableColliders();
-    }
-    [Command]
-    private void EnableCmd()
-    {
-        areCollidersEnabled = true;
-        EnableColliders();
-    }
-    
-    private void EnableColliders()
-    {
-        foreach (Collider collider in handColliders)
-        {
-            collider.enabled = true;
-        }
-    }
-
-    public void EnableDelay(float time)
-    {
-        Invoke(nameof(Enable), time);
-    }
-
-    public void Disable()
-    {
-        DisableCmd();
-        DisableColliders();
-    }
-    [Command]
-    void DisableCmd()
-    {
-        areCollidersEnabled = false;
-        DisableColliders();
-    }
-    void DisableColliders()
-    {
-        foreach (Collider collider in handColliders)
-        {
-            collider.enabled = false;
-        }
-    }
 }
 

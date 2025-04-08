@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class PlayerResetter : MonoBehaviour
 {
-    [SerializeField] private Transform spawnPosition;
+    [SerializeField] private Transform _spawnPosition;
 
     public void ResetPosition()
     {
-        transform.SetPositionAndRotation(spawnPosition.position, spawnPosition.rotation);
+        transform.SetPositionAndRotation(_spawnPosition.position, _spawnPosition.rotation);
     }
 }
