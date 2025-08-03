@@ -1,81 +1,60 @@
 using Mirror;
-using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
+/// <summary>
+/// Coordinates gameplay flow, including player scoring and ball respawning.
+/// </summary>
 public class GameManager : NetworkBehaviour
 {
-    public enum PlayerNumber
-    {
-        NONE,
-        PLAYER1,
-        PLAYER2
-    }
+    /// <summary>
+    /// Identifies a specific player.
+    /// </summary>
+    public enum PlayerNumber { NONE, PLAYER1, PLAYER2 }
+
+    [Header("Spawn Points")]
     [SerializeField] private Transform _ballSpawnPointP1;
+
     [SerializeField] private Transform _ballSpawnPointP2;
-    [SerializeField] private Transform _ball;
-    [SyncVar(hook = nameof(OnActiveBallChanged))]
-    private bool activeBall;
-    [SyncVar(hook =nameof(OnPlayer1ScoreChanged))]
-    private int _player1Score;
-    [SyncVar(hook = nameof(OnPlayer2ScoreChanged))]
-    private int _player2Score;
-    public UnityEvent<int> OnPlayer1ScoreChangedCallback;
-    public UnityEvent<int> OnPlayer2ScoreChangedCallback;
-    public int Player1Score => _player1Score;
-    public int Player2Score => _player2Score;
-    
-    public void AddPointToPlayer(int playerNumber)
+
+    [Header("Dependencies")]
+    [Tooltip("Handles all ball-related actions.")]
+    [SerializeField] private BallController _ballController;
+
+    [Tooltip("Handles all scoring logic.")]
+    [SerializeField] private ScoreManager _scoreManager;
+
+    /// <summary>
+    /// Adds a point to the selected player and respawns the ball at the opposing player's side.
+    /// </summary>
+    /// <param name="player">The player who scored.</param>
+    public void AddPointToPlayer(int player)
     {
         if (!isServer) return;
-        switch (playerNumber)
+
+        switch (player)
         {
             case (int)PlayerNumber.PLAYER1:
-                _player1Score++;
+                _scoreManager.AddPointToPlayer(PlayerNumber.PLAYER1);
                 StartCoroutine(RespawnBallCoroutine(_ballSpawnPointP2.position));
                 break;
+
             case (int)PlayerNumber.PLAYER2:
-                _player2Score++;
+                _scoreManager.AddPointToPlayer(PlayerNumber.PLAYER2);
                 StartCoroutine(RespawnBallCoroutine(_ballSpawnPointP1.position));
-                break;
-            default:
                 break;
         }
     }
+
+    /// <summary>
+    /// Temporarily disables the ball and respawns it after a delay.
+    /// </summary>
+    /// <param name="position">The position where the ball should respawn.</param>
     private IEnumerator RespawnBallCoroutine(Vector3 position)
     {
-        SetBallActive(false);
+        _ballController.SetBallActive(false);
         yield return new WaitForSeconds(2f);
-        RespawnBall(position);
+        _ballController.Respawn(position);
     }
-    public void SetBallActive(bool value)
-    {
-        if (!isServer) return;
-        _ball.gameObject.SetActive(value);
-        _ball.GetComponent<Rigidbody>().Sleep();
-        activeBall = value;
-    }
-    private void RespawnBall(Vector3 position)
-    {
-        _ball.position = position;
-        SetBallActive(true);
-    }
-
-    #region SyncVarCallbacks
-    private void OnPlayer1ScoreChanged(int oldValue, int newValue)
-    {
-        OnPlayer1ScoreChangedCallback?.Invoke(newValue);
-    }
-    private void OnPlayer2ScoreChanged(int oldValue, int newValue)
-    {
-        OnPlayer2ScoreChangedCallback?.Invoke(newValue);
-    }
-
-    private void OnActiveBallChanged(bool oldValue, bool newValue)
-    {
-        _ball.gameObject.SetActive(newValue);
-    } 
-    #endregion
 
 }

@@ -8,9 +8,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Mirror/Examples/Room/Scenes/MirrorRoomGame.unity
+    guid: 48478f4d522f96945b8396f376299d3a
+  - enabled: 1
+    path: Assets/Mirror/Examples/Room/Scenes/MirrorRoomOffline.unity
+    guid: 9e6f14982412b2545a0911ebaaa46a23
+  - enabled: 1
+    path: Assets/Mirror/Examples/Room/Scenes/MirrorRoomOnline.unity
+    guid: d7a6763559b31854586c9e49916273ef
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 76ea86cac8a9ef94a83bb46ae1d64c37, type: 2}
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.addressableassets: {fileID: 11400000, guid: 7aa5d31469f6b524cb31810127bc72a9, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: a2e31920786a9bb4f83fcbc14511cdf6, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 7d3ad0e9b95902c4296cbe7378afd992, type: 2}
   m_UseUCBPForAssetBundles: 0

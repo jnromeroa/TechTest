@@ -1,23 +1,46 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-public class HandAnimation : MonoBehaviour
+/// <summary>
+/// Handles XR controller input to animate a virtual hand using trigger and grip values.
+/// </summary>
+public class HandAnimatorController : MonoBehaviour
 {
-    public InputDeviceCharacteristics controllerCharacteristics;    
-    private InputDevice targetDevice;
+    /// <summary>
+    /// The XR controller characteristics to match (e.g., Left/Right hand, controller type).
+    /// </summary>
+    [Tooltip("Specify the controller characteristics (e.g., Left, Right, Controller)")]
+    public InputDeviceCharacteristics controllerCharacteristics;
+
+    /// <summary>
+    /// Reference to the hand animator component controlling the hand's animation states.
+    /// </summary>
+    [Tooltip("Reference to the hand animator that will be controlled by input")]
     public Animator handAnimator;
 
-    void Start()
+    /// <summary>
+    /// The target XR input device matching the specified characteristics.
+    /// </summary>
+    private InputDevice targetDevice;
+
+
+    /// <summary>
+    /// Initializes the input device on start.
+    /// </summary>
+    private void Start()
     {
-        TryInitialize();
+        TryInitializeDevice();
     }
-    void Update()
+
+    /// <summary>
+    /// Checks for device validity and updates hand animation every frame.
+    /// </summary>
+    private void Update()
     {
-        if(!targetDevice.isValid)
+        if (!targetDevice.isValid)
         {
-            TryInitialize();
+            TryInitializeDevice();
         }
         else
         {
@@ -25,35 +48,43 @@ public class HandAnimation : MonoBehaviour
         }
     }
 
-    void TryInitialize()
+
+    /// <summary>
+    /// Attempts to find and assign the first input device matching the desired characteristics.
+    /// </summary>
+    private void TryInitializeDevice()
     {
         List<InputDevice> devices = new List<InputDevice>();
-
         InputDevices.GetDevicesWithCharacteristics(controllerCharacteristics, devices);
+
         if (devices.Count > 0)
         {
             targetDevice = devices[0];
         }
     }
 
-    void UpdateHandAnimation()
+    /// <summary>
+    /// Updates the hand animator based on trigger and grip input values from the XR controller.
+    /// </summary>
+    private void UpdateHandAnimation()
     {
-        if(targetDevice.TryGetFeatureValue(CommonUsages.trigger, out float triggerValue))
+        //Trigger
+        if (targetDevice.TryGetFeatureValue(CommonUsages.trigger, out float triggerValue))
         {
             handAnimator.SetFloat("Trigger", triggerValue);
         }
         else
         {
-            handAnimator.SetFloat("Trigger", 0);
+            handAnimator.SetFloat("Trigger", 0f);
         }
-
+        //Grip
         if (targetDevice.TryGetFeatureValue(CommonUsages.grip, out float gripValue))
         {
             handAnimator.SetFloat("Grip", gripValue);
         }
         else
         {
-            handAnimator.SetFloat("Grip", 0);
+            handAnimator.SetFloat("Grip", 0f);
         }
     }
 

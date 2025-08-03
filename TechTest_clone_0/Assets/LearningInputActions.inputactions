@@ -1,0 +1,34 @@
+{
+    "name": "LearningInputActions",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "0034fe00-2f73-4ee6-9eb2-ba6079fd742d",
+            "actions": [
+                {
+                    "name": "Continuar",
+                    "type": "Button",
+                    "id": "d4d4530d-3922-4835-9866-093d6fcc16d3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "04a059ba-da22-4685-bac6-dcc89943b900",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Continuar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

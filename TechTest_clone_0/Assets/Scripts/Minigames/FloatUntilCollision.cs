@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class FloatUntilCollision : NetworkBehaviour
 {
-    private Rigidbody rb;
+    private Rigidbody _rb;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
     }
     private void OnEnable()
     {
         if (!isServer) return;
-        rb.useGravity = false;
+        _rb.useGravity = false;
     }
     public void DisableFloat()
     {
         if (!isServer) return;
-        rb.useGravity = true;
+        _rb.useGravity = true;
     }
 }

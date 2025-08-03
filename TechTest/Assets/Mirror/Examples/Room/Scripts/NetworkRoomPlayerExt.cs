@@ -27,7 +27,7 @@ namespace Mirror.Examples.NetworkRoom
 
         public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
         {
-            //Debug.Log($"ReadyStateChanged {newReadyState}");
+            //Debug.Log($"ReadyStateChanged {newReadyState}"); 
         }
 
         public override void OnGUI()
