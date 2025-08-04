@@ -16,6 +16,12 @@ public class MyNetworkManager : NetworkManager
 
     [Tooltip("Use random time within wait time range before becoming host.")]
     [SerializeField] private bool _useRandomSeconds = false;
+    
+    [Tooltip("Choose to wheather hava a hosted game, or a dedicated server solution")]
+    [SerializeField] private bool _hostedGame = false;
+    
+    [Tooltip("If not hosted, choose whether the build will be Server or Client")]
+    [SerializeField] private bool _isServerBuild = true;
 
     [Tooltip("Automatically attempt to join or host on start.")]
     [SerializeField] private bool _autoStart = true;
@@ -58,10 +64,20 @@ public class MyNetworkManager : NetworkManager
     public override void Start()
     {
         base.Start();
-        if (_autoStart)
+        if (!_autoStart) return;
+        if (_hostedGame)
         {
             StartCoroutine(TryConnectAsClientOrHost());
+            return;
         }
+
+        if (_isServerBuild)
+        {
+            StartAsServer();
+            return;
+        }
+
+        StartCoroutine(TryConnectAsClientOnly());
     }
 
     #endregion
@@ -94,6 +110,28 @@ public class MyNetworkManager : NetworkManager
         StartAsHost();
     }
 
+
+    public IEnumerator TryConnectAsClientOnly()
+    {
+        int waitTime = _useRandomSeconds ? Random.Range(0, _serverDiscoveryWaitTime) : _serverDiscoveryWaitTime;
+        WaitForSeconds wait = new WaitForSeconds(1f);
+
+        _networkDiscovery.StartDiscovery();
+
+        for (int i = 0; i < waitTime; i++)
+        {
+            if (_response != null)
+            {
+                _networkDiscovery.StopDiscovery();
+                StartClient(_response.Value.uri);
+                yield break;
+            }
+            yield return wait;
+        }
+
+        _networkDiscovery.StopDiscovery();
+        Debug.Log("No Servers Found");
+    }
     /// <summary>
     /// Callback when a server is found. Stores its response.
     /// </summary>
@@ -118,5 +156,13 @@ public class MyNetworkManager : NetworkManager
         _networkDiscovery.AdvertiseServer();
     }
 
+    public void StartAsServer()
+    {
+        StartServer();
+        Debug.Log("Server Started");
+        _networkDiscovery.AdvertiseServer();
+    }
     #endregion
+    
+
 }
